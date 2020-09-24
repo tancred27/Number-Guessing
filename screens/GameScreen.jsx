@@ -1,8 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, Alert } from 'react-native'; 
 
 import NumberContainer from "../components/NumberContainer";
 import Card from "../components/Card";
+import DefaultStyles from "../constants/default-styles";
 
 const generateRandomBetween = (min, max, exclude) => {
     min = Math.ceil(min);
@@ -16,15 +17,22 @@ const generateRandomBetween = (min, max, exclude) => {
 };
 
 const GameScreen = props => {
-
     const [currentGuess, setCurrentGuess] = useState(generateRandomBetween(1, 100, props.userChoice));
-
+    const [rounds, setRounds] = useState(0);
     const currentMin = useRef(1);
     const currentMax = useRef(100);
 
+    const { userChoice, onGameOver } = props;
+
+    useEffect(() => {
+        if (currentGuess === userChoice) {
+            onGameOver(rounds);
+        }
+    }, [currentGuess, userChoice, onGameOver]);
+
     const nextGuessHandler = direction => {
         if((!direction && currentGuess < props.userChoice) || (direction && currentGuess > props.userChoice)) {
-            Alert.alert('Don\'t lie to me ):', 'You know that is wrong', [{text: "Sorry!", style: "cancel"}]);
+            Alert.alert('This is weird', 'I think you got it the other way around', [{text: "Sorry!", style: "cancel"}]);
             return;
         }
         if (direction) {
@@ -34,11 +42,12 @@ const GameScreen = props => {
         }
         const nextNumber = generateRandomBetween(currentMin.current, currentMax.current, currentGuess);
         setCurrentGuess(nextNumber);
+        setRounds(currentRounds => currentRounds + 1);
     };
 
     return (
         <View style={styles.screen}>
-            <Text>Computer's Guess</Text>
+            <Text style={DefaultStyles.title}>Computer's Guess</Text>
             <NumberContainer>{currentGuess}</NumberContainer>
             <Card style={styles.buttons}>
                 <Button title="LOWER" onPress={() => nextGuessHandler(false)} />
