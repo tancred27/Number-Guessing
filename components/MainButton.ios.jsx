@@ -13,6 +13,14 @@ const MainButton = props => {
     );
 };
 
+/**
+ * Instead of using if checks, we can make separate files:
+ * MainButton.android.jsx
+ * MainButton.ios.jsx
+ * React-Native will automatically load the right file
+ * However, we need to import it as MainButton
+ */
+
 const styles = StyleSheet.create({
     button: {
         backgroundColor: Colors.primary,
